@@ -1,6 +1,8 @@
 # aakat
 AWS Access Key Audit Tool
 
+This is a work in progress - basic functionality  still not complete
+
 
 #### To Do
 1. If access key is found enumerate permissions
