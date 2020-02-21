@@ -22,14 +22,23 @@ def parse_groups(AWS_group_dict):
 
 
 # Get parameters
-parser = argparse.ArgumentParser(description=
-                                 "Search AWS account for Access Key ID and return user and "
-                                 "permission details if found.\n"
-                                 "Uses default aws credentials as per AWS CLI")
-parser.add_argument('aws_access_key_id', type=validate_access_key_id, help='Specify AWS Access Key ID')
+parser = argparse.ArgumentParser(description='''
+                                  Search AWS account for Access Key ID and return user and 
+                                  permission details if found.\n
+                                  Uses default aws credentials as per AWS CLI''')
+parser.add_argument('aws_access_key_id',
+                    type=validate_access_key_id,
+                    help='Specify AWS Access Key ID')
+parser.add_argument('--aws-profile',
+                    help='Specify amazon profile to use.',
+                    default=None,
+                    dest='profile')
+
 args = parser.parse_args()
 
 # Create IAM client/ resource
+if args.profile:
+    boto3.setup_default_session(profile_name=args.profile)
 iam_client = boto3.client('iam')
 iam_resource = boto3.resource('iam')
 
