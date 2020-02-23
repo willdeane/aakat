@@ -15,10 +15,34 @@ def validate_access_key_id(key_id):
 
 
 # Parse group names out of dict returned by iam_client.list_groups_for_user(UserName='user')
-def parse_groups(AWS_group_dict):
-    group_info = None
-    print("bla")
+def parse_groups(aws_group_dict):
+    group_info = []
+    if aws_group_dict:
+        for g in aws_group_dict['Groups']:
+            group_info.append(g['GroupName'])
     return group_info
+
+
+# Parse inline policy names out of dict returned by iam_client.list_user_policies(UserName='user')
+def parse_inline_polices(aws_inline_polices):
+    inline_polices = []
+    if aws_inline_polices:
+        # print(aws_inline_polices)
+        for p in aws_inline_polices['PolicyNames']:
+            inline_polices.append(p)
+            # print(p)
+    return inline_polices
+
+
+# Parse attached policy names out of dict returned by iam_client.list_attached_user_policies(UserName='user')
+def parse_attached_polices(aws_attached_polices):
+    attached_polices = []
+    if aws_attached_polices:
+        # print(aws_attached_polices)
+        for p in aws_attached_polices['AttachedPolicies']:
+            # print("{0} \t {1}".format(p['PolicyName'], p['PolicyArn']))
+            attached_polices.append([p['PolicyName'], p['PolicyArn']])
+    return attached_polices
 
 
 # Get parameters
@@ -51,14 +75,28 @@ for user in iam_resource.users.all():
 
 # If access key found, enumerate permissions for user
 if aws_user:
-    aws_groups = iam_client.list_groups_for_user(UserName=aws_user)
-    aws_inline_polices = iam_client.list_user_policies(UserName=aws_user)
-    aws_managed_polices = iam_client.list_attached_user_policies(UserName=aws_user)
-    users_groups = parse_groups(aws_groups)
-    if aws_inline_polices['PolicyNames']:
-        print(aws_inline_polices)
-    # print("Managed Policies")
-    if aws_managed_polices['AttachedPolicies']:
-        print(aws_managed_polices)
+    # aws_inline_polices = iam_client.list_user_policies(UserName=aws_user)
+    #aws_managed_polices = iam_client.list_attached_user_policies(UserName=aws_user)
+
+    # Group details
+    users_groups = parse_groups(iam_client.list_groups_for_user(UserName=aws_user))
+    if users_groups:
+        print("\nUser {0} is a member of the following groups:".format(aws_user))
+        for g in users_groups:
+            print(g)
+
+    # Inline policy details
+    users_inline_polices = parse_inline_polices(iam_client.list_user_policies(UserName=aws_user))
+    if users_inline_polices:
+        print("\nUser {0} has the following inline polices attached".format(aws_user))
+        for inline in users_inline_polices:
+            print(inline)
+
+    # Managed Policy details
+    users_attached_polices = parse_attached_polices(iam_client.list_attached_user_policies(UserName=aws_user))
+    if users_attached_polices:
+        print("\nUser {0} has the following policies attached".format(aws_user))
+        for attached in users_attached_polices:
+            print(*attached, sep="\t")
 else:
     print("Access key {0} not found.".format(args.aws_access_key_id))
