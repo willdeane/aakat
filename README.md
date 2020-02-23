@@ -1,5 +1,5 @@
 # aakat
-### AWS Access Key Audit Tool
+### Access Key Audit Tool
 Use case: AWS Access key has been found, e.g., in a git repo, temporary file, or environment variables and you need
 to identify which user the access key is associated with.
 
