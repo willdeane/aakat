@@ -75,28 +75,31 @@ for user in iam_resource.users.all():
 
 # If access key found, enumerate permissions for user
 if aws_user:
-    # aws_inline_polices = iam_client.list_user_policies(UserName=aws_user)
-    #aws_managed_polices = iam_client.list_attached_user_policies(UserName=aws_user)
-
     # Group details
     users_groups = parse_groups(iam_client.list_groups_for_user(UserName=aws_user))
     if users_groups:
         print("\nUser {0} is a member of the following groups:".format(aws_user))
         for g in users_groups:
             print(g)
+    else:
+        print("\nUser {0} is not a member of any groups.".format(aws_user))
 
     # Inline policy details
     users_inline_polices = parse_inline_polices(iam_client.list_user_policies(UserName=aws_user))
     if users_inline_polices:
-        print("\nUser {0} has the following inline polices attached".format(aws_user))
+        print("\nUser {0} has the following inline polices:".format(aws_user))
         for inline in users_inline_polices:
             print(inline)
+    else:
+        print("\nUser {0} is not a has no inline polices.".format(aws_user))
 
     # Managed Policy details
     users_attached_polices = parse_attached_polices(iam_client.list_attached_user_policies(UserName=aws_user))
     if users_attached_polices:
-        print("\nUser {0} has the following policies attached".format(aws_user))
+        print("\nUser {0} has the following attached policies:".format(aws_user))
         for attached in users_attached_polices:
             print(*attached, sep="\t")
+    else:
+        print("\nUser {0} is not a has no attached polices.".format(aws_user))
 else:
     print("Access key {0} not found.".format(args.aws_access_key_id))
