@@ -2,7 +2,7 @@ import boto3
 import argparse
 import re
 import json
-import time
+import aws_policies
 
 
 def validate_access_key_id(key_id):
@@ -59,7 +59,11 @@ parser.add_argument('--aws-profile',
                     help='Specify amazon profile to use.',
                     default=None,
                     dest='profile')
-
+parser.add_argument('--print-polices',
+                    help='Print policy document JSON',
+                    default=False,
+                    action='store_true',
+                    dest='print_polices')
 args = parser.parse_args()
 
 
@@ -131,7 +135,11 @@ if aws_user:
         print(f"\nUser {aws_user} has the following attached policies:")
         for attached in users_attached_polices:
             print(*attached, sep="\t")
+            if args.print_polices:
+                aws_policies.get_policy(attached[1], args.profile)
     else:
         print(f"\nUser {aws_user} is not a has no attached polices.")
 else:
     print(f"Access key {args.aws_access_key_id} not found.")
+
+
