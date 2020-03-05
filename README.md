@@ -18,11 +18,11 @@ If the AWS access key is found it prints:
 4. The names of any polices attached to the user
 5. Optionally the policy document json
 
-###Usage 
+### giUsage 
 ```python aakat.py [--aws-profile PROFILE] [--print-polices] aws_access_key_id ```
 
 
-###Requirements
+### Requirements
 - Python 3.6 or greater
 - AWS cli 
 - boto3
